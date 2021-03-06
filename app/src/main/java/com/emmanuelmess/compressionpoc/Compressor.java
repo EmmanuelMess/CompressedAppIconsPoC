@@ -38,7 +38,7 @@ public class Compressor {
             width = bitmap.getWidth();
             height = bitmap.getHeight();
             pixelArray = new short[bitmap.getWidth() * bitmap.getHeight()];
-            Short currentColorCode = Short.MIN_VALUE;
+            short currentColorCode = Short.MIN_VALUE;
 
             for(int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
