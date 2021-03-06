@@ -6,6 +6,8 @@ Compresses the app icons before showing them on the screen
 This is for loading a large amount of images that have a small amount of colors.
 It works by creating a palette and saving the indexes of colors in an array.
 
+You are probably intrested by the file [Compressor.java](https://github.com/EmmanuelMess/CompressedAppIconsPoC/blob/master/app/src/main/java/com/emmanuelmess/compressionpoc/Compressor.java) .
+
 
 
 ----
