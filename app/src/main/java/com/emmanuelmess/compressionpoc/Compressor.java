@@ -6,42 +6,51 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.VectorDrawable;
+import android.os.Build;
 
 import java.util.HashMap;
 
 public class Compressor {
 
     public static final class CompressedBitmap {
-        private int[] pixelArray;
-        private HashMap<Integer, Integer> palette = new HashMap<>();
+        private final short[] pixelArray;
+        private final HashMap<Short, Integer> palette = new HashMap<>();
         private int width, height;
 
         /**
          * if the drawable is already a set of instructions,
          * like vector graphics, save it as is.
          */
-        private Drawable drawable;
+        private final Drawable drawable;
 
         private CompressedBitmap(final Drawable drawable) {
-            if(drawable instanceof VectorDrawable) {
-                this.drawable = drawable;
-                this.pixelArray = null;
-                return;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if(drawable instanceof VectorDrawable) {
+                    this.drawable = drawable;
+                    this.pixelArray = null;
+                    return;
+                }
             }
 
-            HashMap<Integer, Integer> inversePalette = new HashMap<>();
+            HashMap<Integer, Short> inversePalette = new HashMap<>();
 
             Bitmap bitmap = drawableToBitmap(drawable);
             width = bitmap.getWidth();
             height = bitmap.getHeight();
-            pixelArray = new int[bitmap.getWidth() * bitmap.getHeight()];
+            pixelArray = new short[bitmap.getWidth() * bitmap.getHeight()];
+            Short currentColorCode = Short.MIN_VALUE;
 
             for(int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
                     Integer px = bitmap.getPixel(x, y);
 
                     if(!inversePalette.containsKey(px)) {
-                        Integer colorCode = palette.size();
+                        if(currentColorCode == Short.MAX_VALUE) {
+                            throw new IllegalArgumentException("Drawable has too many colors");
+                        }
+
+                        Short colorCode = currentColorCode++;
+
                         palette.put(colorCode, px);
                         inversePalette.put(px, colorCode);
                     }
